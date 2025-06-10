@@ -1,0 +1,15 @@
+{
+    "name": "tirerack-poc",
+    "version": "0.0.0",
+    "description": "",
+    "main": "resources.js",
+    "scripts": {
+        "test": "node --test"
+    },
+    "author": "",
+    "license": "MIT",
+    "type": "module",
+    "dependencies": {
+        "papaparse": "^5.5.2"
+    }
+}

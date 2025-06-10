@@ -1,0 +1,5 @@
+rest: true
+graphqlSchema: # These reads GraphQL schemas to define the schema of database/tables/attributes.
+  files: './schemas/*.graphql' # looks for these files
+jsResource: # Loads JavaScript modules such that their exports are exported as resources
+  files: ./resources/index.js # the entry module for resources
