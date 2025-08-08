@@ -1,0 +1,5 @@
+# Product images all have unique cache key in pageUrl
+type ProductImages @table(database: "EarlyHints") @sealed @export(name: "product-images") {
+	pageUrl: String @primaryKey
+	hints: [String]!
+}
