@@ -33,3 +33,13 @@ export function guessAsType(url: string): string {
 	const ext = path.slice(path.lastIndexOf('.'));
 	return extMap[ext] || 'fetch';
 }
+
+export function getCrossoriginAttr(assetUrl: string, pageUrl: string, asType: string) {
+  try {
+    const a = new URL(assetUrl, pageUrl);
+    const p = new URL(pageUrl);
+    const isXOrigin = a.origin !== p.origin;
+    const needs = asType === 'font' || asType === 'style' || asType === 'script';
+    return isXOrigin && needs ? 'crossorigin="anonymous"' : '';
+  } catch { return ''; }
+}

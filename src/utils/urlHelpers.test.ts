@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { toRelativeIfSameOrigin, guessAsType } from './urlHelpers.js';
+import { toRelativeIfSameOrigin, guessAsType, getCrossoriginAttr } from './urlHelpers.js';
 
 describe('toRelativeIfSameOrigin', () => {
   const page = 'https://example.com/product/123?color=red';
@@ -103,5 +103,31 @@ describe('guessAsType', () => {
         'fetch'
       );
     });
+  });
+});
+
+describe('getCrossoriginAttr', () => {
+  it('returns crossorigin attribute for cross-origin requests', () => {
+    const assetUrl = 'https://cdn.example.net/image.jpg';
+    const pageUrl = 'https://example.com/page';
+    const asType = 'image';
+    const result = getCrossoriginAttr(assetUrl, pageUrl, asType);
+    expect(result).toBe('crossorigin="anonymous"');
+  });
+
+  it('returns empty string for same-origin requests', () => {
+    const assetUrl = 'https://example.com/image.jpg';
+    const pageUrl = 'https://example.com/page';
+    const asType = 'image';
+    const result = getCrossoriginAttr(assetUrl, pageUrl, asType);
+    expect(result).toBe('');
+  });
+
+  it('returns empty string for unsupported types', () => {
+    const assetUrl = 'https://cdn.example.net/image.jpg';
+    const pageUrl = 'https://example.com/page';
+    const asType = 'fetch';
+    const result = getCrossoriginAttr(assetUrl, pageUrl, asType);
+    expect(result).toBe('');
   });
 });
