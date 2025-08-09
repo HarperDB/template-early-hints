@@ -1,4 +1,5 @@
 export function toRelativeIfSameOrigin(assetUrl: string, pageUrl: string) {
+  if (/^:\/\//.test(assetUrl) || /^[^/]+$/.test(assetUrl)) return assetUrl;
   try {
     const asset = new URL(assetUrl, pageUrl);
     const page = new URL(pageUrl);
