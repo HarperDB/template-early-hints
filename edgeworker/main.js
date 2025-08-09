@@ -14,6 +14,7 @@ const OPTIONS = {
 };
 
 export async function onClientRequest(request) {
+	if (!isMainDocumentNavigation(request)) return;
 	try {
 		const encodedPageUrl = encodeURIComponent(`${request.scheme}://${request.host}${request.url}`);
 
