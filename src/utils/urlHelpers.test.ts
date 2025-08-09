@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { toRelativeIfSameOrigin, guessAsType } from './urls.js';
+import { toRelativeIfSameOrigin, guessAsType } from './urlHelpers.js';
 
 describe('toRelativeIfSameOrigin', () => {
   const page = 'https://example.com/product/123?color=red';

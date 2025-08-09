@@ -1,6 +1,6 @@
 import { Resource, databases, logger } from 'harperdb';
 import type { User } from '../types/index.js';
-import { toRelativeIfSameOrigin, guessAsType } from '../utils/urls.js';
+import { toRelativeIfSameOrigin, guessAsType } from '../utils/urlHelpers.js';
 
 const {
 	ProductImages: ProductImagesTable,
