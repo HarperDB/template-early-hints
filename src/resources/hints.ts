@@ -1,8 +1,5 @@
 import { Resource, databases, logger } from 'harperdb';
 import type { User } from '../types/index.js';
-import {
-	AllowedUserRoles,
-} from '../constants/index.js';
 
 const {
 	ProductImages: ProductImagesTable,
@@ -21,8 +18,9 @@ const getProductImages = async (url: string) => {
 };
 
 export class GetHints extends Resource {
+
 	allowRead(user: User) {
-		return user?.role?.id === AllowedUserRoles.SUPER_USER || user?.role?.id === AllowedUserRoles.READ_ONLY;
+		return user?.role?.id === 'super_user';
 	}
 
 	async get(query: { url: string }) {

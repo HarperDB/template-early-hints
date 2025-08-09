@@ -1,5 +1,4 @@
 import { Resource, databases, logger } from 'harperdb';
-import { AllowedUserRoles, } from '../constants/index.js';
 const { ProductImages: ProductImagesTable, } = databases.EarlyHints;
 const getProductImages = async (url) => {
     logger.info(`Fetching product images for URL: ${url}`);
@@ -11,7 +10,7 @@ const getProductImages = async (url) => {
 };
 export class GetHints extends Resource {
     allowRead(user) {
-        return user?.role?.id === AllowedUserRoles.SUPER_USER || user?.role?.id === AllowedUserRoles.READ_ONLY;
+        return user?.role?.id === 'super_user';
     }
     async get(query) {
         const url = new URLSearchParams(query.url).get('q');
