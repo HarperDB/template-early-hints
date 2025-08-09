@@ -34,12 +34,16 @@ export function guessAsType(url: string): string {
 	return extMap[ext] || 'fetch';
 }
 
-export function getCrossoriginAttr(assetUrl: string, pageUrl: string, asType: string) {
+export function getCrossoriginAttr(assetUrl: string, pageUrl: string, asType: string): string {
   try {
-    const a = new URL(assetUrl, pageUrl);
-    const p = new URL(pageUrl);
-    const isXOrigin = a.origin !== p.origin;
-    const needs = asType === 'font' || asType === 'style' || asType === 'script';
-    return isXOrigin && needs ? 'crossorigin="anonymous"' : '';
-  } catch { return ''; }
+    const asset = new URL(assetUrl, pageUrl);
+    const page = new URL(pageUrl);
+    const isCrossOrigin = asset.origin !== page.origin;
+    if (isCrossOrigin && (asType === 'image' || asType === 'font')) {
+      return 'crossorigin="anonymous"';
+    }
+    return '';
+  } catch {
+    return '';
+  }
 }
