@@ -1,4 +1,5 @@
 import { Resource, databases, logger } from 'harperdb';
+import { toRelativeIfSameOrigin, guessAsType } from '../utils/urls.js';
 const { ProductImages: ProductImagesTable, } = databases.EarlyHints;
 const getProductImages = async (url) => {
     logger.info(`Fetching product images for URL: ${url}`);
@@ -6,7 +7,11 @@ const getProductImages = async (url) => {
     if (!result?.hints) {
         return [];
     }
-    return result.hints.map((image) => `<${image};rel=preload;as=image;crossorigin>`);
+    return result.hints.map((assetUrl) => {
+        const rel = toRelativeIfSameOrigin(assetUrl, url);
+        const asType = guessAsType(assetUrl);
+        return `<${rel};rel=preload;as=${asType};crossorigin>`;
+    });
 };
 export class GetHints extends Resource {
     allowRead(user) {
