@@ -12,7 +12,7 @@ export function toRelativeIfSameOrigin(assetUrl: string, pageUrl: string) {
   }
 }
 
-export function guessAsType(url: string): string {
+export function getAsTypeFromUrl(url: string): string {
 	const path = new URL(url, 'http://dummy').pathname.toLowerCase();
 
 	const extMap: Record<string, string> = {

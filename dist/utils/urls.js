@@ -11,7 +11,7 @@ export function toRelativeIfSameOrigin(assetUrl, pageUrl) {
         return assetUrl;
     }
 }
-export function guessAsType(url) {
+export function getAsTypeFromUrl(url) {
     const path = new URL(url, 'http://dummy').pathname.toLowerCase();
     const extMap = {
         '.avif': 'image',

@@ -1,6 +1,6 @@
 import { Resource, databases, logger } from 'harperdb';
 import type { User } from '../types/index.js';
-import { toRelativeIfSameOrigin, guessAsType, getCrossoriginAttr } from '../utils/urlHelpers.js';
+import { toRelativeIfSameOrigin, getAsTypeFromUrl, getCrossoriginAttr } from '../utils/urlHelpers.js';
 
 const {
 	ProductImages: ProductImagesTable,
@@ -17,7 +17,7 @@ const getProductImages = async (url: string) => {
 
 	return result.hints.map((assetUrl: string) => {
 		const rel = toRelativeIfSameOrigin(assetUrl, url);
-		const asType = guessAsType(assetUrl);
+		const asType = getAsTypeFromUrl(assetUrl);
 		const cors = getCrossoriginAttr(assetUrl, url, asType);
         return `<${rel};rel=preload;as=${asType}${cors ? `;${cors}` : ''}>`;
 	});

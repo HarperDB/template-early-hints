@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { toRelativeIfSameOrigin, guessAsType, getCrossoriginAttr } from './urlHelpers.js';
+import { toRelativeIfSameOrigin, getAsTypeFromUrl, getCrossoriginAttr } from './urlHelpers.js';
 
 describe('toRelativeIfSameOrigin', () => {
   const page = 'https://example.com/product/123?color=red';
@@ -38,7 +38,7 @@ function expectAll<T>(samples: T[], fn: (s: T) => any, expected: any) {
   for (const s of samples) expect(fn(s)).toBe(expected);
 }
 
-describe('guessAsType', () => {
+describe('getAsTypeFromUrl', () => {
   describe('images', () => {
     it('maps common image extensions to "image"', () => {
       expectAll(
@@ -52,7 +52,7 @@ describe('guessAsType', () => {
           'http://example.com/image.JPG',
           '/assets/promo/banner.JpEg?x=1#y',
         ],
-        guessAsType,
+        getAsTypeFromUrl,
         'image'
       );
     });
@@ -62,7 +62,7 @@ describe('guessAsType', () => {
     it('maps .css to "style"', () => {
       expectAll(
         ['styles.css', 'http://example.com/styles.CSS', '/css/app.css?v=3'],
-        guessAsType,
+        getAsTypeFromUrl,
         'style'
       );
     });
@@ -72,7 +72,7 @@ describe('guessAsType', () => {
     it('maps .js to "script"', () => {
       expectAll(
         ['app.js', 'http://example.com/app.JS', '/js/app.js#main'],
-        guessAsType,
+        getAsTypeFromUrl,
         'script'
       );
     });
@@ -89,7 +89,7 @@ describe('guessAsType', () => {
           'http://example.com/font.WOFF',
           '/fonts/brand.WoFf2?foo=bar#baz',
         ],
-        guessAsType,
+        getAsTypeFromUrl,
         'font'
       );
     });
@@ -99,7 +99,7 @@ describe('guessAsType', () => {
     it('defaults to "fetch" for unrecognized/extensionless URLs', () => {
       expectAll(
         ['file.txt', 'file.json', 'file', 'http://example.com/', '/noext/'],
-        guessAsType,
+        getAsTypeFromUrl,
         'fetch'
       );
     });
