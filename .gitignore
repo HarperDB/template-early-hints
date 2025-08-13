@@ -17,6 +17,7 @@ coverage
 *.lcov
 
 node_modules/
+dist/
 
 *.tsbuildinfo
 
