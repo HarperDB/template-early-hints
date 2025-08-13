@@ -11,6 +11,7 @@ const OPTIONS = {
 		'Authorization': `Basic ${HARPER_INSTANCE_TOKEN}`,
 		'Content-Type': 'application/json',
 	},
+	timeout: 50,
 };
 
 export async function onClientRequest(request) {
