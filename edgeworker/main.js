@@ -15,6 +15,9 @@ const OPTIONS = {
 };
 
 export async function onClientRequest(request) {
+	const secFetchMode = request.getHeader('sec-fetch-mode');
+	if (String(Array.isArray(secFetchMode) ? secFetchMode[0] : secFetchMode).toLowerCase() !== 'navigate') return;
+
 	try {
 		const encodedPageUrl = encodeURIComponent(`${request.scheme}://${ORIGIN_SITE_BASE_URL}${request.url}`);
 
