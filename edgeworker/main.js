@@ -3,7 +3,7 @@ import { logger } from 'log';
 
 const HARPER_INSTANCE_APPLICATION_URL = '[YOUR_HARPER_INSTANCE_APPLICATION_URL]';
 const HARPER_INSTANCE_TOKEN = '[YOUR_BASE64_ENCODED_HARPER_USER:PASS]';
-const ORIGIN_SITE_BASE_URL = "www.harpersystems.dev";
+const ORIGIN_SITE_BASE_URL = 'www.harpersystems.dev';
 
 const OPTIONS = {
 	method: 'GET',
