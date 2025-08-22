@@ -3,7 +3,7 @@ import { logger } from 'log';
 
 const HARPER_INSTANCE_APPLICATION_URL = '[YOUR_HARPER_INSTANCE_APPLICATION_URL]';
 const HARPER_INSTANCE_TOKEN = '[YOUR_BASE64_ENCODED_HARPER_USER:PASS]';
-const ORIGIN_SITE_BASE_URL = "www.harpersystems.dev";
+const ORIGIN_SITE_BASE_URL = 'www.harpersystems.dev';
 
 const OPTIONS = {
 	method: 'GET',
@@ -11,6 +11,7 @@ const OPTIONS = {
 		'Authorization': `Basic ${HARPER_INSTANCE_TOKEN}`,
 		'Content-Type': 'application/json',
 	},
+	timeout: 50,
 };
 
 function isSafari(userAgent) {
@@ -28,6 +29,14 @@ function isSafari(userAgent) {
 }
 
 export async function onClientRequest(request) {
+	const secFetchMode = request.getHeader('sec-fetch-mode');
+    const hasNavigate = Array.isArray(secFetchMode)
+        ? secFetchMode.includes('navigate')
+        : secFetchMode === 'navigate';
+	if (!hasNavigate) {
+	    return;
+	}
+
 	try {
 		const userAgent = request.getHeader('User-Agent');
 
