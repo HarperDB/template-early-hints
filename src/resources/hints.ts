@@ -5,6 +5,17 @@ const {
 	ProductImages: ProductImagesTable,
 } = databases.EarlyHints;
 
+const toRelativeIfSameOrigin = (imageUrl: string, pageUrl: string): string => {
+  try {
+    const imgUrl = new URL(imageUrl, pageUrl);
+    const pageOrigin = new URL(pageUrl).origin;
+    if (imgUrl.origin !== pageOrigin) return imageUrl;
+    return `${imgUrl.pathname}${imgUrl.search}${imgUrl.hash}`;
+  } catch {
+    return imageUrl;
+  }
+};
+
 const getProductImages = async (url: string) => {
 	logger.info(`Fetching product images for URL: ${url}`);
 
@@ -14,11 +25,13 @@ const getProductImages = async (url: string) => {
 		return [];
 	}
 
-	return result.hints.map((image: string) => `<${image};rel=preload;as=image;crossorigin>`);
+	return result.hints.map((image: string) => {
+		const rel = toRelativeIfSameOrigin(image, url);
+		return `<${rel};rel=preload;as=image;crossorigin>`;
+	});
 };
 
 export class GetHints extends Resource {
-
 	allowRead(user: User) {
 		return user?.role?.id === 'super_user';
 	}
