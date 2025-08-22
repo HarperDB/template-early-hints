@@ -16,6 +16,13 @@ const toRelativeIfSameOrigin = (imageUrl: string, pageUrl: string): string => {
   }
 };
 
+function isCrossOrigin(imageUrl: string, pageUrl: string): boolean {
+  if (!/^https?:\/\//.test(imageUrl)) return false;
+  const imgUrl = new URL(imageUrl);
+  const pageOrigin = new URL(pageUrl).origin;
+  return imgUrl.origin !== pageOrigin;
+}
+
 const getProductImages = async (url: string, safari = false) => {
 	logger.info(`Fetching product images for URL: ${url}`);
 
@@ -27,7 +34,7 @@ const getProductImages = async (url: string, safari = false) => {
 
 	return result.hints.map((image: string) => {
         const rel = toRelativeIfSameOrigin(image, url);
-        const hintType = safari ? 'preconnect' : 'preload';
+        const hintType = safari && isCrossOrigin(image, url) ? 'preconnect' : 'preload';
         return `<${rel};rel=${hintType};as=image;crossorigin>`;
     });
 };
