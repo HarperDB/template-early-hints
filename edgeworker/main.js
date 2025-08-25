@@ -5,6 +5,10 @@ const HARPER_INSTANCE_APPLICATION_URL = '[YOUR_HARPER_INSTANCE_APPLICATION_URL]'
 const HARPER_INSTANCE_TOKEN = '[YOUR_BASE64_ENCODED_HARPER_USER:PASS]';
 const ORIGIN_SITE_BASE_URL = 'www.harpersystems.dev';
 
+const staticPreconnectHosts = [
+  'https://fonts.googleapis.com',
+];
+
 const OPTIONS = {
 	method: 'GET',
 	headers: {
@@ -14,19 +18,42 @@ const OPTIONS = {
 	timeout: 50,
 };
 
+function isSafari(userAgent) {
+	userAgent = String(userAgent).toLowerCase();
+
+	const hasSafari = userAgent.includes('safari');
+	const hasWebKit = userAgent.includes('applewebkit');
+	const hasVersionTag = userAgent.includes('version/'); // Safari-specific token
+
+	// Exclude other brands (desktop & iOS shells)
+	const otherBrands = /(crios|chrome\/|chromium|edg\/|edgios|fxios|opr\/|opios|samsungbrowser|yabrowser|ucbrowser|brave|vivaldi|electron|duckduckgo)/;
+	const isOther = otherBrands.test(userAgent);
+
+	return hasWebKit && hasSafari && hasVersionTag && !isOther;
+}
+
 export async function onClientRequest(request) {
 	const secFetchMode = request.getHeader('sec-fetch-mode');
-    const hasNavigate = Array.isArray(secFetchMode)
-        ? secFetchMode.includes('navigate')
-        : secFetchMode === 'navigate';
+	const hasNavigate = Array.isArray(secFetchMode)
+		? secFetchMode.includes('navigate')
+		: secFetchMode === 'navigate';
 	if (!hasNavigate) {
-	    return;
+		return;
 	}
 
 	try {
 		const encodedPageUrl = encodeURIComponent(`${request.scheme}://${ORIGIN_SITE_BASE_URL}${request.url}`);
+		const params = [`q=${encodedPageUrl}`];
+		const userAgent = request.getHeader('User-Agent');
 
-		const url = `https://${HARPER_INSTANCE_APPLICATION_URL}/hints?q=${encodedPageUrl}`;
+		// For Safari, add static preconnect headers directly since Safari doesn’t support Early Hints. This reduces latency and ensures external resources are preconnected.
+		if (isSafari(userAgent)) {
+			staticPreconnectHosts.forEach(host => {
+  				response.addHeader('Link', `<${host}>; rel=preconnect`);
+			});
+		}
+
+		const url = `https://${HARPER_INSTANCE_APPLICATION_URL}/hints?${params.join('&')}`;
 
 		const response = await httpRequest(url, OPTIONS);
 
