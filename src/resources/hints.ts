@@ -16,14 +16,7 @@ const toRelativeIfSameOrigin = (imageUrl: string, pageUrl: string): string => {
   }
 };
 
-function isCrossOrigin(imageUrl: string, pageUrl: string): boolean {
-  if (!/^https?:\/\//.test(imageUrl)) return false;
-  const imgUrl = new URL(imageUrl);
-  const pageOrigin = new URL(pageUrl).origin;
-  return imgUrl.origin !== pageOrigin;
-}
-
-const getProductImages = async (url: string, safari = false) => {
+const getProductImages = async (url: string) => {
 	logger.info(`Fetching product images for URL: ${url}`);
 
 	const result = await ProductImagesTable.get(url);
@@ -33,10 +26,9 @@ const getProductImages = async (url: string, safari = false) => {
 	}
 
 	return result.hints.map((image: string) => {
-        const rel = toRelativeIfSameOrigin(image, url);
-        const hintType = safari && isCrossOrigin(image, url) ? 'preconnect' : 'preload';
-        return `<${rel};rel=${hintType};as=image;crossorigin>`;
-    });
+		const rel = toRelativeIfSameOrigin(image, url);
+		return `<${rel};rel=preload;as=image;crossorigin>`;
+	});
 };
 
 export class GetHints extends Resource {
@@ -44,9 +36,8 @@ export class GetHints extends Resource {
 		return user?.role?.id === 'super_user';
 	}
 
-	async get(query: { url: string, safari?: string }) {
+	async get(query: { url: string }) {
 		const url = new URLSearchParams(query.url).get('q');
-		const safari = query.safari === '1';
 
 		if (!url) {
 			return {
@@ -58,7 +49,7 @@ export class GetHints extends Resource {
 
 		logger.info(`Fetching the early hints for URL: ${url}`);
 
-		const productImages = await getProductImages(url, safari);
+		const productImages = await getProductImages(url);
 		const earlyHints = [...productImages].join(',');
 
 		return { status: 200, headers: { 'Content-Type': 'application/json' }, data: earlyHints };

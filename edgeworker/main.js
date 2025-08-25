@@ -5,6 +5,10 @@ const HARPER_INSTANCE_APPLICATION_URL = '[YOUR_HARPER_INSTANCE_APPLICATION_URL]'
 const HARPER_INSTANCE_TOKEN = '[YOUR_BASE64_ENCODED_HARPER_USER:PASS]';
 const ORIGIN_SITE_BASE_URL = 'www.harpersystems.dev';
 
+const staticPreconnectHosts = [
+  'https://fonts.googleapis.com',
+];
+
 const OPTIONS = {
 	method: 'GET',
 	headers: {
@@ -39,11 +43,15 @@ export async function onClientRequest(request) {
 
 	try {
 		const encodedPageUrl = encodeURIComponent(`${request.scheme}://${ORIGIN_SITE_BASE_URL}${request.url}`);
-		
 		const params = [`q=${encodedPageUrl}`];
-
 		const userAgent = request.getHeader('User-Agent');
-		if (isSafari(userAgent)) params.push('safari=1');
+
+		// For Safari, add static preconnect headers directly since Safari doesn’t support Early Hints. This reduces latency and ensures external resources are preconnected.
+		if (isSafari(userAgent)) {
+			staticPreconnectHosts.forEach(host => {
+  				response.addHeader('Link', `<${host}>; rel=preconnect`);
+			});
+		}
 
 		const url = `https://${HARPER_INSTANCE_APPLICATION_URL}/hints?${params.join('&')}`;
 
