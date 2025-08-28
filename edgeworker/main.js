@@ -53,7 +53,7 @@ export async function onClientRequest(request) {
 			});
 		}
 
-		const url = `https://${HARPER_INSTANCE_APPLICATION_URL}/hints?${params.join('&')}`;
+		const url = `https://${HARPER_INSTANCE_APPLICATION_URL}/hints?q=${encodedPageUrl}`;
 
 		const response = await httpRequest(url, OPTIONS);
 
