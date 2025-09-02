@@ -3,10 +3,9 @@ import { logger } from 'log';
 
 const HARPER_INSTANCE_APPLICATION_URL = '[YOUR_HARPER_INSTANCE_APPLICATION_URL]';
 const HARPER_INSTANCE_TOKEN = '[YOUR_BASE64_ENCODED_HARPER_USER:PASS]';
-const ORIGIN_SITE_BASE_URL = 'www.harpersystems.dev';
 
 const staticPreconnectHosts = [
-  'https://fonts.googleapis.com',
+	'https://fonts.googleapis.com',
 ];
 
 const OPTIONS = {
@@ -15,7 +14,7 @@ const OPTIONS = {
 		'Authorization': `Basic ${HARPER_INSTANCE_TOKEN}`,
 		'Content-Type': 'application/json',
 	},
-	timeout: 50,
+	timeout: 250,
 };
 
 function isSafari(userAgent) {
@@ -42,15 +41,21 @@ export async function onClientRequest(request) {
 	}
 
 	try {
-		const encodedPageUrl = encodeURIComponent(`${request.scheme}://${ORIGIN_SITE_BASE_URL}${request.url}`);
-		const params = [`q=${encodedPageUrl}`];
+		const encodedPageUrl = encodeURIComponent(`${request.scheme}://${request.host}${request.url}`);
 		const userAgent = request.getHeader('User-Agent');
 
 		// For Safari, add static preconnect headers directly since Safari doesn’t support Early Hints. This reduces latency and ensures external resources are preconnected.
+		const safariHints = [];
 		if (isSafari(userAgent)) {
 			staticPreconnectHosts.forEach(host => {
-  				response.addHeader('Link', `<${host}>; rel=preconnect`);
+				safariHints.push(`<${host}>;rel=preconnect;crossorigin`);
 			});
+		}
+
+		if (safariHints.length > 0) {
+			const hintString = safariHints.join(',');
+			request.setVariable('PMUSER_103_HINTS', hintString);
+			return;
 		}
 
 		const url = `https://${HARPER_INSTANCE_APPLICATION_URL}/hints?q=${encodedPageUrl}`;
