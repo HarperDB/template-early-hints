@@ -17,20 +17,6 @@ const OPTIONS = {
 	timeout: 250,
 };
 
-function isSafari(userAgent) {
-	userAgent = String(userAgent).toLowerCase();
-
-	const hasSafari = userAgent.includes('safari');
-	const hasWebKit = userAgent.includes('applewebkit');
-	const hasVersionTag = userAgent.includes('version/'); // Safari-specific token
-
-	// Exclude other brands (desktop & iOS shells)
-	const otherBrands = /(crios|chrome\/|chromium|edg\/|edgios|fxios|opr\/|opios|samsungbrowser|yabrowser|ucbrowser|brave|vivaldi|electron|duckduckgo)/;
-	const isOther = otherBrands.test(userAgent);
-
-	return hasWebKit && hasSafari && hasVersionTag && !isOther;
-}
-
 export async function onClientRequest(request) {
 	const secFetchMode = request.getHeader('sec-fetch-mode');
 	const hasNavigate = Array.isArray(secFetchMode)
@@ -42,11 +28,10 @@ export async function onClientRequest(request) {
 
 	try {
 		const encodedPageUrl = encodeURIComponent(`${request.scheme}://${request.host}${request.url}`);
-		const userAgent = request.getHeader('User-Agent');
 
 		// For Safari, add static preconnect headers directly since Safari doesn’t support Early Hints. This reduces latency and ensures external resources are preconnected.
 		const safariHints = [];
-		if (isSafari(userAgent)) {
+		if (request.device.brandName === 'Safari') {
 			staticPreconnectHosts.forEach(host => {
 				safariHints.push(`<${host}>;rel=preconnect;crossorigin`);
 			});
